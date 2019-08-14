@@ -4,6 +4,10 @@ package com.example.demo.xfs;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
+
+import com.example.demo.xfs.Service;
 import com.example.demo.xfs.TeamBeanRepository;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +25,8 @@ import org.springframework.web.client.RestTemplate;
 @RestController
 @RequestMapping("/api")
 public class XfsController {  
+	private final Service service;
+	
 	@Autowired
 	private  MongoTemplate mongoTemplate; 
 	
@@ -31,9 +37,10 @@ public class XfsController {
 	@Autowired
 	private  TeamBeanRepository TeamBeanRepository; 
 	
-	public XfsController(XfsRepository xfsRepository, TeamBeanRepository TeamBeanRepository) {
+	public XfsController(XfsRepository xfsRepository, TeamBeanRepository TeamBeanRepository,Service service) {
 		this.xfsRepository=xfsRepository;
 		this.TeamBeanRepository=TeamBeanRepository;
+		this.service = service;
 	}
 	
 		
@@ -69,6 +76,9 @@ public class XfsController {
 		
 		TeamBean p= mongoTemplate.findOne(
 				  Query.query(Criteria.where("teamName").is((buildInfo).get("teamName"))), TeamBean.class);
+		
+		System.out.println(p.member);
+		
 		String gitUserName=p.gitUserName;
 		String gitRepoName=p.gitRepoName;
 		 String URL="https://api.github.com/repos/"+gitUserName+"/"+gitRepoName+"/commits";
@@ -95,6 +105,7 @@ public class XfsController {
 		TeamBeanRepository.save(p); 
 		return p;
 	}
+	
 }
 
 
